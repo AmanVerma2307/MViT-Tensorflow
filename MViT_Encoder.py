@@ -30,7 +30,7 @@ class MViT_Encoder(tf.keras.layers.Layer):
         self.q_stride = q_stride # Stride for Query
         self.kv_kernel = kv_kernel # Pooling kernel for Keys and Value
         self.kv_stride = kv_stride # Stride for Keys and Value
-        self.dff_dim = dff_dim # Feed-forward network dimension
+        self.dff_dim = dff_dim # Feed-forward network dimension 
         self.rate = rate # Rate of the dropout
     
         ##### Defining layers
