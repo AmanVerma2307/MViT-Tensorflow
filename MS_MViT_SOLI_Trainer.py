@@ -103,8 +103,8 @@ enc_block_1 = Encoder(d_model,num_heads,dff_dim,rate)
 mvit_block_1 = MViT_Encoder(d_model,d_model,4,(2,2,2),
                             (2,2,2),(1,1,1),(1,1,1),
                             rate=0.3,dff_dim=128)
-mvit_block_2 = MViT_Encoder(d_model,d_model,4,(1,2,2),
-                            (1,2,2),(1,1,1),(1,1,1),
+mvit_block_2 = MViT_Encoder(d_model,d_model,4,(1,1,1),
+                            (1,1,1),(1,1,1),(1,1,1),
                             rate=0.3,dff_dim=128)
 
 ###### Defining Model
@@ -133,7 +133,7 @@ conv23_rdi = tf.keras.layers.Add()([conv23_rdi,conv21_rdi])
 tubelet_embedding = tubelet_embedding_layer(conv23_rdi)
 tokens = positional_embedding_encoder(tubelet_embedding)
 enc_block_1_op = enc_block_1(tokens)
-enc_block_2_op, q_shape_1 = mvit_block_1(enc_block_1_op,[n_t,n_h,n_w])
+enc_block_2_op, q_shape_1 = mvit_block_1(enc_block_1_op,[8,3,3])
 enc_block_3_op, q_shape_2 = mvit_block_2(enc_block_2_op,q_shape_1)
 
 ##### Output Layer
@@ -222,9 +222,6 @@ def train_step(X_batch,y_batch,lambda_id,lambda_cgid,optimizer):
 
         ### Output Computation
         g_hgr_batch, g_id_batch, f_theta_batch = model(X_batch)
-        print('====================================================')
-        print(g_hgr_batch.shape,g_id_batch.shape,f_theta_batch.shape)
-        print(y_hgr_batch.shape,y_id_batch.shape,y_cgid_batch.shape)
 
         ### Loss Computations
         loss_hgr_batch = loss_func_hgr(y_hgr_batch,g_hgr_batch)

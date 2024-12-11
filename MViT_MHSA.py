@@ -144,6 +144,7 @@ class MViT_MHSA(tf.keras.layers.Layer):
         ##### Splitting heads
         B, L, _ = x.shape
         x = self.split_heads(x,self.d_in) # shape(x) -> (B,num_heads,L,d_in/num_heads)
+        #print(x.shape)
 
         ##### Pooling Operation
         #if(self.no_pool == False):
@@ -159,6 +160,8 @@ class MViT_MHSA(tf.keras.layers.Layer):
                                     self.value_pool,
                                     thw_shape,
                                     self.value_norm) # shape(v) -> (B,num_heads,L_v,d_in/num_heads)
+        
+        #print(q.shape, k.shape, v.shape)
 
         ##### Output dimension calculation
         L_q = q_shape[0]*q_shape[1]*q_shape[2] # L_q=T_q*H_q*W_q
@@ -198,20 +201,20 @@ class MViT_MHSA(tf.keras.layers.Layer):
         return x, q_shape
     
 ###### Testing
-a = tf.random.normal(shape=(25,320,32))
-b = tf.random.normal(shape=(25,10,128))
-thw_shape = [10,8,4]
-mvit_block_1 = MViT_MHSA(32,64,4,(2,2,2),(2,2,2),
-                          (1,1,1),(1,1,1))
-mvit_block_2 = MViT_MHSA(64,128,4,(1,2,2),
-                         (1,2,2),(1,1,1),(1,1,1))
+#a = tf.random.normal(shape=(25,320,32))
+#b = tf.random.normal(shape=(25,10,128))
+#thw_shape = [10,8,4]
+#mvit_block_1 = MViT_MHSA(32,64,4,(2,2,2),(2,2,2),
+#                          (1,1,1),(1,1,1))
+#mvit_block_2 = MViT_MHSA(64,128,4,(1,2,2),
+#                         (1,2,2),(1,1,1),(1,1,1))
 #b, b_shape = mvit_block(a,thw_shape)
 #print(b.shape, b_shape)
 
-Input_layer = tf.keras.layers.Input(shape=(320,32))
-output_layer, q_shape_1 = mvit_block_1(Input_layer,thw_shape)
-output_layer, q_shape_2 = mvit_block_2(output_layer,q_shape_1)
-model = tf.keras.models.Model(inputs=Input_layer,outputs=output_layer)
-model.compile(tf.keras.optimizers.Adam(lr=1e-4),loss='mse')
-model.summary()
-model.fit(a,b,epochs=100,batch_size=32)
+#Input_layer = tf.keras.layers.Input(shape=(320,32))
+#output_layer, q_shape_1 = mvit_block_1(Input_layer,thw_shape)
+#doutput_layer, q_shape_2 = mvit_block_2(output_layer,q_shape_1)
+#model = tf.keras.models.Model(inputs=Input_layer,outputs=output_layer)
+#model.compile(tf.keras.optimizers.Adam(lr=1e-4),loss='mse')
+#model.summary()
+#model.fit(a,b,epochs=100,batch_size=32)
