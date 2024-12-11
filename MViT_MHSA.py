@@ -199,7 +199,7 @@ class MViT_MHSA(tf.keras.layers.Layer):
     
 ###### Testing
 a = tf.random.normal(shape=(25,320,32))
-b = tf.random.normal(shape=(25,40,64))
+b = tf.random.normal(shape=(25,10,128))
 thw_shape = [10,8,4]
 mvit_block_1 = MViT_MHSA(32,64,4,(2,2,2),(2,2,2),
                           (1,1,1),(1,1,1))
@@ -210,7 +210,7 @@ mvit_block_2 = MViT_MHSA(64,128,4,(1,2,2),
 
 Input_layer = tf.keras.layers.Input(shape=(320,32))
 output_layer, q_shape_1 = mvit_block_1(Input_layer,thw_shape)
-#output_layer, q_shape_2 = mvit_block_2(output_layer,q_shape_1)
+output_layer, q_shape_2 = mvit_block_2(output_layer,q_shape_1)
 model = tf.keras.models.Model(inputs=Input_layer,outputs=output_layer)
 model.compile(tf.keras.optimizers.Adam(lr=1e-4),loss='mse')
 model.summary()
