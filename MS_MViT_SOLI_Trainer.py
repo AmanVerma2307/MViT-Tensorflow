@@ -70,9 +70,9 @@ num_layers = 2
 d_model = 32
 num_heads = 16
 dff_dim = 128
-p_t = 5
-p_h = 5
-p_w = 5
+p_t = 2
+p_h = 4
+p_w = 4
 n_t = (((T - p_t)//p_t)+1)
 n_h = (((H - p_h)//p_h)+1)
 n_w = (((W - p_w)//p_w)+1)
@@ -102,16 +102,16 @@ tubelet_embedding_layer = Tubelet_Embedding(d_model,(p_t,p_h,p_w))
 positional_embedding_encoder = PositionEmbedding(max_seq_len,d_model)
 
 #### Stage-1
-block_11 = MViT_Encoder(d_model,d_model,num_heads,(2,1,1),
-                            (2,1,1),(1,1,1),(1,1,1),
+block_11 = MViT_Encoder(d_model,d_model*2,num_heads,(2,2,2),
+                            (2,2,2),(3,3,3),(3,3,3),
                             rate=0.3,dff_dim=128)
-block_12 = Encoder(d_model,num_heads,dff_dim,rate)
+block_12 = Encoder(d_model*2,num_heads,dff_dim,rate)
 
 #### Stage-2
-block_21 = MViT_Encoder(d_model,d_model*2,num_heads,(2,1,1),
+block_21 = MViT_Encoder(d_model*2,d_model*4,num_heads,(2,1,1),
                             (2,1,1),(1,1,1),(1,1,1),
-                            rate=0.3,dff_dim=128)
-block_22 = Encoder(d_model*2,num_heads,dff_dim,rate)
+                            rate=0.3,dff_dim=128*2)
+block_22 = Encoder(d_model*4,num_heads,dff_dim,rate)
 
 #### Stage-3
 block_31 = MViT_Encoder(d_model*2,d_model*4,num_heads,(1,2,2),
@@ -167,11 +167,11 @@ block_21_op, block_21_shape = block_21(block_12_op,block_11_shape)
 block_22_op = block_22(block_21_op)
 
 ### Stage-3
-block_31_op, block_31_shape = block_31(block_22_op,block_21_shape)
-block_32_op = block_32(block_31_op)
+#block_31_op, block_31_shape = block_31(block_22_op,block_21_shape)
+#block_32_op = block_32(block_31_op)
 
 ##### Output Layer
-gap_op = tf.keras.layers.GlobalAveragePooling1D()(block_32_op)
+gap_op = tf.keras.layers.GlobalAveragePooling1D()(block_22_op)
 dense1 = tf.keras.layers.Dense(32,activation='relu')(gap_op)
 
 #### HGR Output
